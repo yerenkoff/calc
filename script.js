@@ -1,4 +1,13 @@
 let container = document.getElementsByClassName("container")[0];
+let close = document.getElementsByClassName("close")[0];
+let modal = document.getElementsByClassName("modal")[0];
+// let newChannel = document.getElementsByClassName("newChannel")[0];
+
+close.onclick = () => {
+    modal.style.transform = "translateY(-100%)"
+}
+
+
 let calcForm = `
 <form action="">
                 <button type="button">
@@ -27,14 +36,14 @@ let calcForm = `
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        <tr class="calculationRow">
                             <td>Яндекс.Директ</td>
-                            <td><input type="number" value=3000></td>
-                            <td><input type="number"></td>
-                            <td><input type="number"></td>
-                            <td>0</td>
-                            <td>- ₽</td>
-                            <td>₽</td>
+                            <td><input type="number" value=3000 onchange="refreshOpportunityTable(event)" class="clicksInput"></td>
+                            <td><input type="number" onchange="refreshOpportunityTable(event)" class="clickPriceInput"></td>
+                            <td><input type="number" onchange="refreshOpportunityTable(event)" class="conversionInput"></td>
+                            <td class="leadCell">0</td>
+                            <td class="leadPriceCell">0</td>
+                            <td class="channelCostCell">0</td>
                             <td>
                                 <button>
                                     <svg version="1.1" meta="vk-icons-close" width="20" height="20" viewBox="0 0 20 20">
@@ -46,27 +55,27 @@ let calcForm = `
                         </tr>
                         <tr>
                             <td>
-                                <button>НОВЫЙ КАНАЛ</button>
+                                <button class="newChannel" type="button">НОВЫЙ КАНАЛ</button>
                             </td>
                             <td colspan="3">
                                 Лиды (звонки и заявки)
                             </td>
-                            <td>60</td>
-                            <td>1500₽</td>
-                            <td>90 000 ₽</td>
+                            <td class="leadSumCell">60</td>
+                            <td class="leadPriceSumCell">1500₽</td>
+                            <td class="channelCostSumCell">90 000 ₽</td>
                         </tr>
                         <tr>
                             <td colspan="4">
                                 Конверсия лидов в продажи, %
                             </td>
                             <td>
-                                <input type="number">
+                                <input type="number" onchange="refreshOpportunityTable(event)" class="resultLeadsInput">
                             </td>
                         </tr>
                         <tr>
                             <td colspan="4">Продажи</td>
-                            <td>5</td>
-                            <td>18 000 ₽</td>
+                            <td class="resultLeadsCell">5</td>
+                            <td class="resultLeadPriceCell">18 000 ₽</td>
                         </tr>
                     </tbody>
 
@@ -90,7 +99,7 @@ let calcForm = `
                             <td><input type="number"></td>
                             <td><input type="number"></td>
                             <td>0</td>
-                            <td>- ₽</td>
+                            <td>0</td>
                             <td><input type="number"></td>
                             <td>
                                 <button>
@@ -103,7 +112,7 @@ let calcForm = `
                         </tr>
                         <tr>
                             <td>
-                                <button>НОВЫЙ КАНАЛ</button>
+                                <button class="newChannel" type="button">НОВЫЙ КАНАЛ</button>
                             </td>
                             <td colspan="3">
                                 Лиды (звонки и заявки)
@@ -134,6 +143,7 @@ let addFormButton = document.getElementsByClassName("addFormButton")[0];
 
 addFormButton.onclick = () => {
     container.innerHTML = container.innerHTML + calcForm;
+    newChannelOnclick();
 }
 
 function toggleTable(event, t) {
@@ -141,4 +151,64 @@ function toggleTable(event, t) {
         table.style.display = "none";
     }
     event.target.parentElement.getElementsByClassName(t)[0].style.display = "block";
+}
+
+function newChannelOnclick() {
+    for (let b of document.getElementsByClassName("newChannel")) {
+        b.onclick = () => {
+            modal.style.transform = "translateY(0)"
+        }
+    }
+}
+
+function refreshOpportunityTable(event) {
+    let parentRow = event.target.parentElement.parentElement
+    let parentTable = parentRow.parentElement.parentElement
+
+    // inputs
+    // let clicksInput = parentRow.getElementsByClassName("clicksInput")[0];
+    // let clickPriceInput = parentRow.getElementsByClassName("clickPriceInput")[0];
+    // let conversionInput = parentRow.getElementsByClassName("conversionInput")[0];
+    // let resultLeadsInput = parentRow.getElementsByClassName("resultLeadsInput")[0];
+    
+    
+    // formula cells
+    let leadSumCell = parentTable.getElementsByClassName("leadSumCell")[0];
+    let leadPriceSumCell = parentTable.getElementsByClassName("leadPriceSumCell")[0];
+    let channelCostSumCell = parentTable.getElementsByClassName("channelCostSumCell")[0];
+
+    let resultLeadsCell = parentTable.getElementsByClassName("resultLeadsCell")[0];
+    let resultLeadPriceCell = parentTable.getElementsByClassName("resultLeadPriceCell")[0];
+    // let channelCostCell = parentRow.getElementsByClassName("channelCostCell")[0];
+    // let channelCostCell = parentRow.getElementsByClassName("channelCostCell")[0];
+    // let channelCostCell = parentRow.getElementsByClassName("channelCostCell")[0];
+
+
+    // let channelCostCell = parentRow.getElementsByClassName("channelCostCell")[0];
+    // let channelCostCell = parentRow.getElementsByClassName("channelCostCell")[0];
+
+    // channelCostCell.innerHTML = event.target.value * 
+    // console.log(parentRow, parentTable, parentTable.getElementsByClassName("calculationRow"));
+
+    for (r of parentTable.getElementsByClassName("calculationRow")) {
+        let clicksInput = r.getElementsByClassName("clicksInput")[0];
+        let clickPriceInput = r.getElementsByClassName("clickPriceInput")[0];
+        let conversionInput = r.getElementsByClassName("conversionInput")[0];
+        
+        let leadCell = r.getElementsByClassName("leadCell")[0];
+        let leadPriceCell = r.getElementsByClassName("leadPriceCell")[0];
+        let channelCostCell = r.getElementsByClassName("channelCostCell")[0];
+        
+        console.log(channelCostCell.innerHTML, parseInt(leadPriceCell.innerHTML));
+        leadPriceCell.innerHTML = (clickPriceInput.value * 100 / conversionInput.value).toFixed(2);
+        leadCell.innerHTML = parseInt(channelCostCell.innerHTML) / parseInt(leadPriceCell.innerHTML);
+        channelCostCell.innerHTML = clicksInput.value * clickPriceInput.value;
+
+        // console.log(parseInt(leadSumCell.innerHTML), leadCell.innerHTML);
+        leadSumCell.innerHTML = parseInt(leadSumCell.innerHTML) + parseInt(leadCell.innerHTML)
+        leadPriceSumCell.innerHTML = parseInt(leadPriceSumCell.innerHTML) + parseInt(leadPriceCell.innerHTML)
+        channelCostSumCell.innerHTML = parseInt(channelCostSumCell.innerHTML) + parseInt(channelCostCell.innerHTML)
+    }
+
+    // resultLeadsCell.innerHTML = 
 }
